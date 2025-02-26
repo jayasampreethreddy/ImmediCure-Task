@@ -1,9 +1,10 @@
 import pandas as pd
 from sentence_transformers import SentenceTransformer, util
 import torch
-
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Directory of keymapping.py
+CSV_PATH = os.path.join(BASE_DIR, r"cleaned_doctor_data_fixed.csv")
 # Load the doctor dataset
-df = pd.read_csv(r"C:\Users\konde\Music\IMMEDICURE\Immedicure-Task\models\cleaned_doctor_data_fixed.csv")
+df = pd.read_csv(CSV_PATH)
 
 # Extract unique specialties from the dataset
 unique_specialties = df["specialty"].dropna().unique().tolist()
