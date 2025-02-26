@@ -1,6 +1,8 @@
 # Doctor Recommendation Web App 
 
 ## 📌 Project Overview
+![WhatsApp Image 2025-02-27 at 02 46 55_48061b31](https://github.com/user-attachments/assets/f3e3a6f6-8157-42eb-bd55-517e231c8647)
+![WhatsApp Image 2025-02-27 at 02 47 44_2be70d4b](https://github.com/user-attachments/assets/42e16c2a-bdb0-4e1f-b696-af8a4380eac5)
 
 This project is a Doctor Recommendation Web App that:
 - ✅ Takes symptoms as input
