@@ -102,7 +102,7 @@ graphql-relay==3.2.0
 greenlet==3.0.3
 grpcio==1.66.1
 gto==1.7.1
-gunicorn==23.0.0
+gunicorn
 h11==0.14.0
 h5py==3.11.0
 httpcore==0.16.3
