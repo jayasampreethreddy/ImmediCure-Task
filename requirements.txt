@@ -4,3 +4,4 @@ pandas
 torch
 sentence-transformers
 requests
+flask_cors
