@@ -43,31 +43,15 @@
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        .navbar-title {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: white;
-        }
-
-        .nav-left,
-        .nav-right {
-            display: flex;
-            align-items: center;
-        }
-
-        .go-back {
-            background-color: #6c757d;
+        .navbar a {
             color: white;
             text-decoration: none;
-            padding: 8px 15px;
-            border-radius: 5px;
+            font-size: 1.2rem;
             font-weight: bold;
-            transition: background 0.3s;
-            margin-right: 15px;
         }
 
-        .go-back:hover {
-            background-color: #5a6268;
+        .navbar a:hover {
+            text-decoration: underline;
         }
 
         /* Doctor Cards */
@@ -142,6 +126,19 @@
         .dark-mode .profile-button {
             background-color: #00A8FF;
         }
+
+        /* Centered Header */
+        .page-title {
+            text-align: center;
+            font-size: 2.2rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #007BFF;
+        }
+
+        .dark-mode .page-title {
+            color: #00A8FF;
+        }
     </style>
 </head>
 
@@ -149,14 +146,12 @@
 
     <!-- Navbar -->
     <div class="navbar">
-        <div class="nav-left">
-            <a href="/" class="go-back">🔙 Go Back</a>
-        </div>
-        <div class="navbar-title">Search Results</div>
-        <div class="nav-right">
-            <button id="theme-toggle" class="btn btn-light">🌙</button>
-        </div>
+        <a href="/">🔙 Go Back</a>
+        <button id="theme-toggle" class="btn btn-light">🌙</button>
     </div>
+
+    <!-- Page Title -->
+    <h1 class="page-title">Search Results</h1>
 
     {% if doctors %}
     <div class="mt-3">
@@ -189,7 +184,6 @@
     {% else %}
     <p class="text-center">No doctors found for the given symptoms. Try again.</p>
     {% endif %}
-
     <!-- Dark Mode Toggle Script -->
     <script>
         // Dark mode toggle functionality (Same as index.html)
