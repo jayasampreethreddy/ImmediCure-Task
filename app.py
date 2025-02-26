@@ -23,5 +23,5 @@ def search():
     print("🔍 Final Doctors Data Sent to UI:", doctors)  # Debugging
 
     return render_template('results.html', doctors=doctors)
-if __name__ == '__main__':
-    app.run()
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=10000)
