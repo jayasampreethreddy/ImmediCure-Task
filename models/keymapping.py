@@ -1,6 +1,8 @@
 import pandas as pd
 from sentence_transformers import SentenceTransformer, util
 import torch
+import os
+import sys
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Directory of keymapping.py
 CSV_PATH = os.path.join(BASE_DIR, r"cleaned_doctor_data_fixed.csv")
 # Load the doctor dataset
