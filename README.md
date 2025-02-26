@@ -1,8 +1,6 @@
-# Doctor Recommendation Web App 
+# Doctor Recommendation Web App - README
 
 ## 📌 Project Overview
-![WhatsApp Image 2025-02-27 at 02 46 55_48061b31](https://github.com/user-attachments/assets/f3e3a6f6-8157-42eb-bd55-517e231c8647)
-![WhatsApp Image 2025-02-27 at 02 47 44_2be70d4b](https://github.com/user-attachments/assets/42e16c2a-bdb0-4e1f-b696-af8a4380eac5)
 
 This project is a Doctor Recommendation Web App that:
 - ✅ Takes symptoms as input
@@ -51,19 +49,20 @@ print("✅ Data Scraped & Saved!")
 
 ### 🧠 AI Model Used
 
-We used TF-IDF Vectorization + Cosine Similarity for symptom-specialty mapping.
-This method converts text into numerical form and finds the closest specialty.
+We used SentenceTransformer ('all-MiniLM-L6-v2') for improved semantic understanding and TF-IDF Vectorization + Cosine Similarity for symptom-specialty mapping.
+
+The SentenceTransformer model provides better semantic understanding between symptoms and specialties by generating embeddings that capture meaning beyond simple keyword matching.
 
 ### 🔍 How It Works
 
-1️⃣ Convert specialties and user input (symptoms) into TF-IDF vectors.
+1️⃣ Convert specialties and user input (symptoms) into embeddings using SentenceTransformer.
 2️⃣ Compute cosine similarity between symptoms & specialties.
 3️⃣ Select top 3 matches (if similarity > 0.5).
 
 ### 📜 Code for Mapping (keymapping.py)
 
 ```python
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 import joblib
 import pandas as pd
@@ -72,17 +71,22 @@ import pandas as pd
 df = pd.read_csv("models/cleaned_doctor_data_fixed.csv")
 unique_specialties = df["specialty"].unique()
 
-# Train Vectorizer
-vectorizer = TfidfVectorizer()
-specialty_vectors = vectorizer.fit_transform(unique_specialties)
+# Load SentenceTransformer model
+model = SentenceTransformer('all-MiniLM-L6-v2')
 
-# Save Vectorizer
-joblib.dump(vectorizer, "models/vectorizer.pkl")
+# Generate embeddings for specialties
+specialty_embeddings = model.encode(unique_specialties)
+
+# Save model (optional)
+joblib.dump(model, "models/sentence_transformer_model.pkl")
 
 # Function to Map Symptoms → Specialties
 def map_symptom_to_specialty(symptom, top_k=3):
-    symptom_vector = vectorizer.transform([symptom])
-    similarity_scores = cosine_similarity(symptom_vector, specialty_vectors)[0]
+    # Generate embedding for input symptom
+    symptom_embedding = model.encode([symptom])
+    
+    # Calculate similarity
+    similarity_scores = cosine_similarity(symptom_embedding, specialty_embeddings)[0]
     top_k_indices = similarity_scores.argsort()[-top_k:][::-1]
     
     best_matches = [(unique_specialties[idx], similarity_scores[idx]) for idx in top_k_indices]
@@ -145,6 +149,18 @@ if __name__ == "__main__":
 - Input box for symptoms
 - Displays doctor recommendations
 
+### 🖥️ UI Screenshots
+
+#### Home Page
+![WhatsApp Image 2025-02-27 at 02 46 55_a92590a4](https://github.com/user-attachments/assets/d4dd6e99-a6d5-4d97-b2c4-c46efb960efd)
+
+*The main search interface where users enter their symptoms*
+
+#### Results Page
+![WhatsApp Image 2025-02-27 at 02 47 44_a822ee71](https://github.com/user-attachments/assets/0508b697-8047-4b3f-a114-3e941cafce9b)
+
+*Doctor recommendations based on symptom analysis*
+
 ### 🖥️ templates/index.html
 
 ```html
@@ -174,8 +190,8 @@ if __name__ == "__main__":
 For FREE deployment, we use:
 
 - Backend: Render (Flask)
-- Frontend: Render
-
+- Frontend: Vercel
+- Database: Google Sheets (Optional)
 
 ### 🚀 Steps to Deploy on Render
 
@@ -189,9 +205,11 @@ Flask
 scikit-learn
 pandas
 joblib
+sentence-transformers
 ```
 
 5️⃣ Deploy & test API!
+
 
 ## 📌 Summary of Everything We Did
 
@@ -199,10 +217,10 @@ joblib
 |------|---------|
 | 1. Data Collection | Scraped CMS API for doctor data |
 | 2. Data Cleaning | Filtered & saved doctor details |
-| 3. AI Model | Used TF-IDF + Cosine Similarity |
+| 3. AI Model | Used SentenceTransformer ('all-MiniLM-L6-v2') + Cosine Similarity |
 | 4. Backend | Flask API for symptom mapping & doctor search |
 | 5. UI | HTML, Bootstrap for clean design |
-| 6. Deployment | Render for backend, Vercel for frontend |
+| 6. Deployment | Render for backend,frontend |
 
 ## 🚀 Final Steps
 
