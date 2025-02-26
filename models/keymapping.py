@@ -1,106 +1,54 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
-
-
-# In[2]:
-
-
 import pandas as pd
-
-# Load the cleaned doctor dataset
-df = pd.read_csv(r"C:\Users\konde\Music\IMMEDICURE\ImmediCure-Task\models\cleaned_doctor_data_fixed.csv")
-
-# Extract unique specialties from dataset
-unique_specialties = df["specialty"].dropna().unique().tolist()
-
-print(f"✅ Found {len(unique_specialties)} unique specialties!")
-
-
-# In[6]:
-
-
 from sentence_transformers import SentenceTransformer, util
-import pandas as pd
+import torch  # <-- Add this if missing
 
-# Load cleaned doctor dataset
-df = pd.read_csv(r"C:\Users\konde\Music\IMMEDICURE\ImmediCure-Task\models\cleaned_doctor_data_fixed.csv")
 
-# Extract unique specialties from dataset
+# Load the doctor dataset
+df = pd.read_csv(r"C:\Users\konde\Music\IMMEDICURE\Immedicure-Task\models\cleaned_doctor_data_fixed.csv")
+
+# Extract unique specialties from the dataset
 unique_specialties = df["specialty"].dropna().unique().tolist()
-print(f"✅ Found {len(unique_specialties)} unique specialties!")
 
-# Load a good AI model for medical text
-model = SentenceTransformer("BAAI/bge-small-en")
+# Load a pretrained sentence transformer model (using a model from sentence-transformers)
+model = SentenceTransformer('all-MiniLM-L6-v2')  # You can use other models as needed
 
-# Encode all specialties from the dataset
-specialty_embeddings = model.encode(unique_specialties, convert_to_tensor=True)
+# Function to encode text using sentence-transformers
+def encode_text(text):
+    # Use sentence-transformers to encode the text
+    return model.encode(text, convert_to_tensor=True)
 
+# Function to map symptom to specialties
 def map_symptom_to_specialty(symptom, top_k=3):
-    """Maps a given symptom to the best-matching specialties from the dataset."""
-    symptom_embedding = model.encode(symptom, convert_to_tensor=True)
+    """Maps a given symptom to the best-matching specialties using sentence-transformers model."""
+    
+    # Encode the symptom
+    symptom_embedding = encode_text(symptom)  # This is a 1D tensor
+
+    # Encode all specialties and stack them into a single tensor
+    specialty_embeddings = torch.stack([encode_text(specialty) for specialty in unique_specialties])
+
+    # Calculate cosine similarity using sentence-transformers' util function
     similarity_scores = util.pytorch_cos_sim(symptom_embedding, specialty_embeddings).squeeze(0)
 
-    # Get top-K matches
+    # Get top K most similar specialties
     top_k_indices = similarity_scores.argsort(descending=True)[:top_k]
-    best_matches = [(unique_specialties[idx], similarity_scores[idx].item()) for idx in top_k_indices]
+    top_specialties = [unique_specialties[idx] for idx in top_k_indices]
 
-    # Apply confidence threshold (remove low-scoring matches)
-    best_matches = [match[0] for match in best_matches if match[1] > 0.5]  
+    return top_specialties
 
-    return best_matches
-
-
-
-# In[7]:
-
-
-print(map_symptom_to_specialty("chest pain"))   # Expected: Cardiology
-print(map_symptom_to_specialty("skin rash"))    # Expected: Dermatology
-print(map_symptom_to_specialty("anxiety"))      # Expected: Psychiatry
-print(map_symptom_to_specialty("blurry vision")) # Expected: Ophthalmology
-
-
-# In[12]:
-
-
-import pandas as pd
-
-# Load cleaned doctor dataset
-df = pd.read_csv(r"C:\Users\konde\Music\IMMEDICURE\ImmediCure-Task\models\cleaned_doctor_data_fixed.csv")
-
+# Function to search doctors based on specialties
 def search_doctors(symptom, location=None, top_k=5):
     """Finds doctors based on AI-mapped specialties and optional location."""
     
-    # Step 1: AI Maps symptom to specialties
     matched_specialties = map_symptom_to_specialty(symptom, top_k=3)
     print(f"🔍 AI Mapped '{symptom}' → {matched_specialties}")
 
-    # Step 2: Filter doctors by matched specialties
     filtered_doctors = df[df["specialty"].isin(matched_specialties)]
 
-    # Step 3: Filter by location (if provided)
     if location:
         filtered_doctors = filtered_doctors[filtered_doctors["location"].str.contains(location, case=False, na=False)]
 
-    # Step 4: Return top K results
-    return filtered_doctors.head(top_k)[["doctor_name", "specialty", "location", "profile_url"]]
-
-# Test the search function
-
-
-
-# In[13]:
-
-
-print(search_doctors("chest pain", location="New York"))  # Example with location
-print(search_doctors("skin rash"))  # Example without location
-
-
-# In[ ]:
-
-
+    # ✅ Include 'overview' in the result if available
+    return filtered_doctors.head(top_k)[["doctor_name", "specialty", "location", "profile_url", "overview"]]
 
 

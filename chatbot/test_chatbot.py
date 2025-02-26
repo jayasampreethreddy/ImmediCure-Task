@@ -1,6 +1,13 @@
 from intent_classifier import classify_specialty
 from response_generator import generate_response
-from models.keymapping import map_symptom_to_specialty, search_doctors  # ✅ Import these!
+
+import sys
+import os
+
+# Ensure the root project directory is in sys.path
+sys.path.append(os.path.abspath(os.path.dirname(__file__) + "/.."))
+
+from models.keymapping import map_symptom_to_specialty, search_doctors
 
 while True:
     user_input = input("User: ")
