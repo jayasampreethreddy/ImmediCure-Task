@@ -1,11 +1,14 @@
 import os
 import flask
+from flask import Flask
+from flask_cors import CORS
+
+app = Flask(__name__)
+CORS(app)  # ✅ Now it works
+
 
 # Limit memory usage (Optional for ML models)
 os.environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
-
-app = flask.Flask(__name__)
-flask.CORS(app) 
 
 @app.route('/')
 def home():
